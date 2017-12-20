@@ -36,7 +36,7 @@ services:
     volumes:
       - ./kibana/config/:/usr/share/kibana/config:ro
     ports:
-      - "8080:8080"
+      - "8080:5601"
     networks:
       - elk
     depends_on:
