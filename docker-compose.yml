@@ -14,6 +14,7 @@ services:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
+    restart: on-failure
 
   logstash:
     build:
@@ -29,6 +30,7 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    restart: on-failure
 
   kibana:
     build:
@@ -41,8 +43,8 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    restart: on-failure
 
 networks:
-
   elk:
     driver: bridge
