@@ -5,3 +5,10 @@
 server.name: kibana
 server.host: "0"
 elasticsearch.url: http://elasticsearch:9200
+# SSL for outgoing requests from the Kibana Server (PEM formatted)
+server.ssl.enabled: true
+server.ssl.key: /path/to/your/key.pem
+server.ssl.certificate: /path/to/your/server.crt
+
+#elasticsearch.username: "kibana"
+#elasticsearch.password:  "<pwd>"
