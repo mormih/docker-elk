@@ -8,9 +8,16 @@ network.host: 0.0.0.0
 # minimum_master_nodes need to be explicitly set when bound on a public IP
 # set to 1 to allow single node clusters
 # Details: https://github.com/elastic/elasticsearch/pull/17288
-discovery.zen.minimum_master_nodes: 1
+discovery.zen.minimum_master_nodes: 2
+#xpack.license.self_generated.type: basic
 
 ## Use single node discovery in order to disable production mode and avoid bootstrap checks
 ## see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
 #
-discovery.type: single-node
+action.auto_create_index: .security,.security-6,.monitoring*,.watches,.triggered_watches,.watcher-history*,.ml,*.kibana,.logstash*
+xpack.security.transport.ssl.enabled: true
+xpack.security.http.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.ssl.certificate_authorities: ${CERTS_DIR}/ca/ca.crt
+xpack.ssl.certificate: ${CERTS_DIR}/${node.name}/${node.name}.crt
+xpack.ssl.key: ${CERTS_DIR}/${node.name}/${node.name}.key

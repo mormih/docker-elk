@@ -4,11 +4,15 @@
 #
 server.name: kibana
 server.host: "0"
-elasticsearch.url: http://elasticsearch:9200
+elasticsearch.url: https://es01:9200
 # SSL for outgoing requests from the Kibana Server (PEM formatted)
 server.ssl.enabled: true
-server.ssl.key: ./config/key.pem
-server.ssl.certificate: ./config/server.crt
+server.ssl.key: ./certs/key.pem
+server.ssl.certificate: ./certs/server.crt
+xpack.reporting.encryptionKey: "55555**********PWD**********55555"
+xpack.security.sessionTimeout: 600000
+xpack.security.enabled: true
+xpack.security.secureCookies: true
 
-#elasticsearch.username: "kibana"
-#elasticsearch.password:  "<pwd>"
+elasticsearch.username: elastic
+elasticsearch.password: ${ELASTIC_PASSWORD}

@@ -1,21 +1,44 @@
-version: '2'
+version: "2.2"
 
 services:
-
-  elasticsearch:
+  es01:
+    container_name: es01
     build:
       context: elasticsearch/
+    environment:
+      - node.name=es01
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - esdata_01:/usr/share/elasticsearch/data:rw
+      - ./certs:$CERTS_DIR
     ports:
-      - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      - 9200:9200
+    healthcheck:
+      test: curl --cacert $CERTS_DIR/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - elk
     restart: on-failure
-
+  es02:
+    container_name: es02
+    build:
+      context: elasticsearch/
+    environment:
+      - node.name=es02
+      - discovery.zen.ping.unicast.hosts=es01
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - esdata_02:/usr/share/elasticsearch/data:rw
+      - ./certs:$CERTS_DIR
+    networks:
+      - elk
+    restart: on-failure
+  wait_until_ready:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+    command: /usr/bin/true
+    depends_on: {"es01": {"condition": "service_healthy"}}
   logstash:
     build:
       context: logstash/
@@ -30,22 +53,26 @@ services:
     networks:
       - elk
     depends_on:
-      - elasticsearch
+      - es01
     restart: on-failure
-
   kibana:
     build:
       context: kibana/
     volumes:
       - ./kibana/config/:/usr/share/kibana/config:ro
+      - ./certs:/usr/share/config/certs:ro
     ports:
       - "8080:5601"
     networks:
       - elk
     depends_on:
-      - elasticsearch
+      - es01
     restart: on-failure
-
 networks:
   elk:
     driver: bridge
+volumes:
+  esdata_01:
+    driver: local
+  esdata_02:
+    driver: local
