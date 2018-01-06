@@ -13,3 +13,4 @@ keystore.properties
 local.properties
 *.kdbx
 *.db
+.env

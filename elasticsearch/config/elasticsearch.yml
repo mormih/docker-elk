@@ -8,16 +8,32 @@ network.host: 0.0.0.0
 # minimum_master_nodes need to be explicitly set when bound on a public IP
 # set to 1 to allow single node clusters
 # Details: https://github.com/elastic/elasticsearch/pull/17288
-discovery.zen.minimum_master_nodes: 2
+discovery.zen.minimum_master_nodes: ${ELASTIC_NODES_COUNT}
 #xpack.license.self_generated.type: basic
 
 ## Use single node discovery in order to disable production mode and avoid bootstrap checks
 ## see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
 #
-action.auto_create_index: .security,.security-6,.monitoring*,.watches,.triggered_watches,.watcher-history*,.ml,*.kibana,.logstash*
-xpack.security.transport.ssl.enabled: true
-xpack.security.http.ssl.enabled: true
-xpack.security.transport.ssl.verification_mode: certificate
-xpack.ssl.certificate_authorities: ${CERTS_DIR}/ca/ca.crt
-xpack.ssl.certificate: ${CERTS_DIR}/${node.name}/${node.name}.crt
-xpack.ssl.key: ${CERTS_DIR}/${node.name}/${node.name}.key
+action.auto_create_index: .security,.security-6,.monitoring*,.watches,.triggered_watches,.watcher-history*,.ml,*.kibana,logstash-*
+######## Start Search Guard Demo Configuration ########
+# WARNING: revise all the lines below before you go into production
+searchguard.enterprise_modules_enabled: false
+searchguard.ssl.transport.pemcert_filepath: certs/${node.name}/${node.name}.crt.pem
+searchguard.ssl.transport.pemkey_filepath: certs/${node.name}/${node.name}.key.pem
+searchguard.ssl.transport.pemtrustedcas_filepath: certs/ca/root-ca/root-ca.pem
+searchguard.ssl.transport.enforce_hostname_verification: false
+searchguard.ssl.http.enabled: true
+searchguard.ssl.http.pemcert_filepath: certs/${node.name}/${node.name}.crt.pem
+searchguard.ssl.http.pemkey_filepath: certs/${node.name}/${node.name}.key.pem
+searchguard.ssl.http.pemtrustedcas_filepath: certs/ca/root-ca/root-ca.pem
+searchguard.allow_unsafe_democertificates: true
+searchguard.allow_default_init_sgindex: true
+searchguard.authcz.admin_dn:
+  - CN=kirk,OU=client,O=client,L=test, C=de
+
+searchguard.audit.type: internal_elasticsearch
+searchguard.enable_snapshot_restore_privilege: true
+searchguard.check_snapshot_restore_write_privileges: true
+searchguard.restapi.roles_enabled: ["sg_all_access"]
+node.max_local_storage_nodes: 3
+######## End Search Guard Demo Configuration ########

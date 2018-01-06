@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-docker exec es01 /bin/bash -c "bin/x-pack/setup-passwords auto --batch -Expack.ssl.key=/usr/share/elasticsearch/config/x-pack/certificates/es01/es01.key -Expack.ssl.certificate=/usr/share/elasticsearch/config/x-pack/certificates/es01/es01.crt -Expack.ssl.certificate_authorities=/usr/share/elasticsearch/config/x-pack/certificates/ca/ca.crt -Expack.security.transport.ssl.enabled=true -Expack.security.http.ssl.enabled=true -u https://es01:9200"

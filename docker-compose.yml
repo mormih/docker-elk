@@ -7,38 +7,40 @@ services:
       context: elasticsearch/
     environment:
       - node.name=es01
+      - ELASTIC_NODES_COUNT=1
     volumes:
-      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:rw
       - esdata_01:/usr/share/elasticsearch/data:rw
-      - ./certs:$CERTS_DIR
+      - ./certs:/usr/share/elasticsearch/config/certs:ro
     ports:
       - 9200:9200
-    healthcheck:
-      test: curl --cacert $CERTS_DIR/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - elk
+#    healthcheck:
+#      test: curl --cacert $CERTS_DIR/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#    networks:
+#      - elk
+#    restart: on-failure
+#  es02:
+#    container_name: es02
+#    build:
+#      context: elasticsearch/
+#    environment:
+#      - node.name=es02
+#      - discovery.zen.ping.unicast.hosts=es01
+#    volumes:
+#      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+#      - esdata_02:/usr/share/elasticsearch/data:rw
+#      - ./certs:$CERTS_DIR
+#    networks:
+#      - elk
+#    restart: on-failure
+#  wait_until_ready:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+#    command: /usr/bin/true
+#    depends_on: {"es01": {"condition": "service_healthy"}}
     restart: on-failure
-  es02:
-    container_name: es02
-    build:
-      context: elasticsearch/
-    environment:
-      - node.name=es02
-      - discovery.zen.ping.unicast.hosts=es01
-    volumes:
-      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      - esdata_02:/usr/share/elasticsearch/data:rw
-      - ./certs:$CERTS_DIR
-    networks:
-      - elk
-    restart: on-failure
-  wait_until_ready:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
-    command: /usr/bin/true
-    depends_on: {"es01": {"condition": "service_healthy"}}
   logstash:
     build:
       context: logstash/
@@ -46,23 +48,45 @@ services:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
       - ./logstash/logs:/usr/share/logstash/logs:rw
+      - ./certs:/usr/share/logstash/config/certs:ro
     ports:
-      - "5000:5000"
+      - $GELF_PORT:$GELF_PORT
+      - $LOGSTASH_PORT:$LOGSTASH_PORT
     environment:
+      ELASTICSEARCH_URL: $ELASTICSEARCH_URL
+      LOGSTASH_USER: $LOGSTASH_USER
+      LOGSTASH_PASSWORD: $LOGSTASH_PASSWORD
+      LOGSTASH_PORT: $LOGSTASH_PORT
+      GELF_PORT: $GELF_PORT
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
+    restart: on-failure
+  logspout:
+    build:
+      context: extensions/logspout
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      ROUTE_URIS: logstash+tcp://logstash:$LOGSTASH_PORT
+      LOGSTASH_TAGS: $LOGSTASH_TAGS
+    networks:
+      - elk
     depends_on:
-      - es01
+      - logstash
     restart: on-failure
   kibana:
     build:
       context: kibana/
     volumes:
-      - ./kibana/config/:/usr/share/kibana/config:ro
-      - ./certs:/usr/share/config/certs:ro
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+      - ./certs:/usr/share/kibana/config/certs:ro
     ports:
       - "8080:5601"
+    environment:
+      ELASTICSEARCH_URL: $ELASTICSEARCH_URL
+      KIBANA_USER: $KIBANA_USER
+      KIBANA_PASSWORD: $KIBANA_PASSWORD
     networks:
       - elk
     depends_on:
