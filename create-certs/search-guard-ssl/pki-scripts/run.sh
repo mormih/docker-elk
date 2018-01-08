@@ -1,4 +1,7 @@
 #!/bin/bash
+
+echo $DOMAIN
+exit
 OPENSSL_VER="$(openssl version)"
 
 if [[ $OPENSSL_VER == *"0.9"* ]]; then

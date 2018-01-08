@@ -1,9 +1,9 @@
 version: '2'
 services:
   create_certs:
-    container_name: create_certs
+    container_name: create-certs
     build:
-        context: elasticsearch/
+        context: create-certs/
     command: >
       bash -c '
         pwd
@@ -14,5 +14,4 @@ services:
       '
     working_dir: /usr/share/elasticsearch/search-guard-ssl/pki-scripts
     volumes:
-      - ./extensions/search-guard-ssl:/usr/share/elasticsearch/search-guard-ssl:rw
       - ./certs:/usr/share/elasticsearch/search-guard-ssl/pki-scripts/certs:rw
