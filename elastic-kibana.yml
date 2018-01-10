@@ -1,5 +1,4 @@
 version: "2.2"
-
 services:
   es01:
     container_name: es01
@@ -41,40 +40,6 @@ services:
 #    command: /usr/bin/true
 #    depends_on: {"es01": {"condition": "service_healthy"}}
     restart: on-failure
-  logstash:
-    build:
-      context: logstash/
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-      - ./logstash/logs:/usr/share/logstash/logs:rw
-      - ./certs:/usr/share/logstash/config/certs:ro
-    ports:
-      - $GELF_PORT:$GELF_PORT
-      - $LOGSTASH_PORT:$LOGSTASH_PORT
-    environment:
-      ELASTICSEARCH_URL: $ELASTICSEARCH_URL
-      LOGSTASH_USER: $LOGSTASH_USER
-      LOGSTASH_PASSWORD: $LOGSTASH_PASSWORD
-      LOGSTASH_PORT: $LOGSTASH_PORT
-      GELF_PORT: $GELF_PORT
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - elk
-    restart: on-failure
-  logspout:
-    build:
-      context: extensions/logspout
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      ROUTE_URIS: logstash+tcp://logstash:$LOGSTASH_PORT
-      LOGSTASH_TAGS: $LOGSTASH_TAGS
-    networks:
-      - elk
-    depends_on:
-      - logstash
-    restart: on-failure
   kibana:
     build:
       context: kibana/
@@ -82,7 +47,7 @@ services:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
       - ./certs:/usr/share/kibana/config/certs:ro
     ports:
-      - "8080:5601"
+      - "443:5601"
     environment:
       ELASTICSEARCH_URL: $ELASTICSEARCH_URL
       KIBANA_USER: $KIBANA_USER

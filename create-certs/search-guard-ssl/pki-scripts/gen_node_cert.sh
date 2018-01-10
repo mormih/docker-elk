@@ -9,7 +9,7 @@
 set -e
 NODE_NAME=$1
 NODE_CERTS_PATH=$CERTS_PATH/$NODE_NAME
-DOMAIN="$NODE_NAME.example.com"
+DOMAIN="${DOMAIN_COMPONENT_1}.${DOMAIN_COMPONENT_0}"
 
 if [ -z "$3" ] ; then
   unset CA_PASS KS_PASS
@@ -36,7 +36,7 @@ fi
 echo Generating keystore and certificate for node $NODE_NAME
 
 if [ -z "$DN" ]; then
-   DN="CN=$DOMAIN, OU=SSL, O=Test, L=Test, C=DE"
+   DN="CN=$DOMAIN, OU=$ORGANIZATIONAL_UNIT_NAME, O=$ORGANIZATION_NAME, L=$LOCALITY, C=$COUNTRY"
 fi
 
 

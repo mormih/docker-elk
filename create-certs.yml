@@ -7,11 +7,25 @@ services:
     command: >
       bash -c '
         pwd
-        ls -la
+        export
         chmod +x *.sh
         ./run.sh
+
+
         chown 1000:1000 ./certs
       '
     working_dir: /usr/share/elasticsearch/search-guard-ssl/pki-scripts
+    environment:
+      ELASTIC_NODES: $ELASTIC_NODES
+      LOGSTASH_NODES: $LOGSTASH_NODES
+      KIBANA_NODES: $LOGSTASH_NODES
+      DOMAIN_COMPONENT_0: $DOMAIN_COMPONENT_0
+      DOMAIN_COMPONENT_1: $DOMAIN_COMPONENT_1
+      ORGANIZATION_NAME : $ORGANIZATION_NAME
+      ORGANIZATIONAL_UNIT_NAME: $ORGANIZATIONAL_UNIT_NAME
+      LOCALITY: $LOCALITY
+      COUNTRY: $COUNTRY
+      CERTS_PATH: $CERTS_PATH
+      CA_PASS: $CA_PASS
     volumes:
       - ./certs:/usr/share/elasticsearch/search-guard-ssl/pki-scripts/certs:rw
