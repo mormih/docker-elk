@@ -1,0 +1,1 @@
+59 23 * * * root /usr/bin/curator /root/.curator/shrink-actions.yml  >> /var/log/cron.log 2>&1

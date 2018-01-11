@@ -14,11 +14,11 @@ actions:
       Delete each source index after successful shrink, then reroute the shrunk
       index with the provided parameters.
     options:
-      disable_action: True
-      ignore_empty_list: True
+      disable_action: false
+      ignore_empty_list: true
       shrink_node: DETERMINISTIC
       node_filters:
-        permit_masters: False
+        permit_masters: true
         exclude_nodes:
       number_of_shards: 1
       number_of_replicas: 1

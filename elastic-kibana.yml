@@ -9,6 +9,7 @@ services:
       ELASTIC_NODES_COUNT: 1
       ELASTIC_PORT: $ELASTIC_PORT
       INDEX_RETENTION_PERIOD_IN_DAYS: $INDEX_RETENTION_PERIOD_IN_DAYS
+      CURATOR_AUTH: $ELASTICSEARCH_USER:$ELASTICSEARCH_PASSWORD
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:rw
       - ./esdata_01:/usr/share/elasticsearch/data:rw

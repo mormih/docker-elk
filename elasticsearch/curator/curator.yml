@@ -11,11 +11,11 @@ client:
   client_cert:
   client_key:
   ssl_no_validate: true
-  http_auth: ${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}
+  http_auth: ${CURATOR_AUTH}
   timeout: 30
-  master_only: False
+  master_only: true
 
 logging:
-  loglevel: INFO
+  loglevel: DEBUG
   logfile:
   logformat: default
