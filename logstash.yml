@@ -25,8 +25,3 @@ services:
 networks:
   elk:
     driver: bridge
-volumes:
-  esdata_01:
-    driver: local
-  esdata_02:
-    driver: local
