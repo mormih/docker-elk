@@ -41,6 +41,7 @@ services:
 #    depends_on: {"es01": {"condition": "service_healthy"}}
     restart: on-failure
   kibana:
+    container_name: kibana
     build:
       context: kibana/
     volumes:

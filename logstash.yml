@@ -10,7 +10,7 @@ services:
       - ./logstash/logs:/usr/share/logstash/logs:rw
       - ./certs:/usr/share/logstash/config/certs:ro
     ports:
-      - $GELF_PORT:$GELF_PORT
+      - $GELF_PORT:$GELF_PORT/udp
       - $LOGSTASH_PORT:$LOGSTASH_PORT
     environment:
       ELASTICSEARCH_URL: $ELASTICSEARCH_URL
@@ -21,19 +21,6 @@ services:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
-    restart: on-failure
-  logspout:
-    build:
-      context: extensions/logspout
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      ROUTE_URIS: logstash+tcp://logstash:$LOGSTASH_PORT
-      LOGSTASH_TAGS: $LOGSTASH_TAGS
-    networks:
-      - elk
-    depends_on:
-      - logstash
     restart: on-failure
 networks:
   elk:
