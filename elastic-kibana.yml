@@ -9,7 +9,7 @@ services:
       - ELASTIC_NODES_COUNT=1
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:rw
-      - esdata_01:/usr/share/elasticsearch/data:rw
+      - ./esdata_01:/usr/share/elasticsearch/data:rw
       - ./certs:/usr/share/elasticsearch/config/certs:ro
     ports:
       - 9200:9200
@@ -30,7 +30,7 @@ services:
 #      - discovery.zen.ping.unicast.hosts=es01
 #    volumes:
 #      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-#      - esdata_02:/usr/share/elasticsearch/data:rw
+#      - ./esdata_02:/usr/share/elasticsearch/data:rw
 #      - ./certs:$CERTS_DIR
 #    networks:
 #      - elk
@@ -60,8 +60,3 @@ services:
 networks:
   elk:
     driver: bridge
-volumes:
-  esdata_01:
-    driver: local
-  esdata_02:
-    driver: local
